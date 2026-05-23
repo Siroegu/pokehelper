@@ -1,0 +1,49 @@
+{
+    "manifest_version": 3,
+    "name": "Auto Reroll Non Shiny",
+    "version": "1.0",
+
+    "permissions":
+    [
+        "storage"
+    ],
+
+    "host_permissions":
+    [
+        "https://pokelike.xyz/*"
+    ],
+
+    "action":
+    {
+        "default_popup": "popup.html"
+    },
+
+    "background":
+    {
+        "service_worker": "background.js"
+    },
+
+    "content_scripts":
+    [
+        {
+            "matches":
+            [
+                "https://pokelike.xyz/*"
+            ],
+
+            "js":
+            [
+                "content.js"
+            ],
+
+            "run_at": "document_idle"
+        }
+        
+    ],
+    "web_accessible_resources": [
+        {
+        "resources": ["jaja.ogg"],
+        "matches": ["<all_urls>"]
+        }
+    ]
+}
