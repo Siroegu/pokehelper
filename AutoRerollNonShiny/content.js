@@ -84,11 +84,12 @@
             return Array.from(document.querySelectorAll(".poke-card"));
         },
 
-        isShiny(card) {
+       isShiny(card) {
             return !!(
                 card.querySelector(".shiny-badge") ||
-                card.querySelector('img[src*="shiny"]') ||
-                (card.innerText || "").toLowerCase().includes("shiny")
+                card.querySelector("img.poke-sprite.shiny") ||
+                card.querySelector('img[src*="/shiny/"]') ||
+                card.classList.contains("shiny")
             );
         },
 
