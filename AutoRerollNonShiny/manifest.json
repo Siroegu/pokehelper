@@ -10,7 +10,8 @@
 
     "host_permissions":
     [
-        "https://pokelike.xyz/*"
+        "https://pokelike.xyz/*",
+        "https://pokeapi.co/*"
     ],
 
     "action":
@@ -20,8 +21,7 @@
 
     "background":
     {
-        "service_worker": "background.js",
-        "persistent" : "false"
+        "service_worker": "js/background.js"
     },
 
     "content_scripts": 
@@ -31,13 +31,13 @@
             [
                 "https://pokelike.xyz/*"
             ],
-
-            "js":
-            [
-                "content.js"
-            ],
-
-            "run_at": "document_idle"
+         "css": [
+            "styles/main.css",
+            "styles/shiny-helper.css",
+            "styles/type-checker.css"
+        ],
+           "js": ["api/pokeapi.js",  "templates/type-checker-templates.js","templates/templates.js","js/type-checker.js", "js/content.js"],
+           "run_at": "document_idle"
         }
         
     ],
