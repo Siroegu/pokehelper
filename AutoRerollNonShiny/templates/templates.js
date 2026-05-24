@@ -22,8 +22,7 @@ const templates = {
             
             <div id="sh-tag-list" class="sh-tag-list"></div>
             
-            <div class="sh-row">
-            <label class="sh-label">ms</label>            
+            <div class="sh-row">        
             </div>
             
             <div id="sh-status">
