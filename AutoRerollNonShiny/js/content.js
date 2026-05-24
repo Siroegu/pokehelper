@@ -162,7 +162,7 @@
             rerolls:     ui.panel.querySelector("#sh-rerolls"),
             state:       ui.panel.querySelector("#sh-state"),
             shinyToggle: ui.panel.querySelector("#sh-shiny-toggle"),
-            delay:       ui.panel.querySelector("#sh-delay"),
+            delay:       0,
         };
     
         ui.bindEvents();
@@ -256,10 +256,6 @@
                 if (e.key === "Enter") ui.addTarget();
             });
 
-            delay.addEventListener("keydown", e => {
-                if (e.key === "Enter") ui.updateDelay();
-            });
-
             add.addEventListener("click",   () => ui.addTarget());
             toggle.addEventListener("click", () => toggleEnabled());
 
@@ -275,8 +271,6 @@
                 state.muted = !state.muted;
                 mute.textContent = state.muted ? "🔇" : "🔊";
             });
-
-            delay.value = state.sleepMs;
 
            const typeToggle = ui.panel.querySelector("#sh-type-toggle");
 

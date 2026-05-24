@@ -23,8 +23,7 @@ const templates = {
             <div id="sh-tag-list" class="sh-tag-list"></div>
             
             <div class="sh-row">
-            <label class="sh-label">ms</label>
-            <input id="sh-delay" type="number" value="150" class="sh-input" />
+            <label class="sh-label">ms</label>            
             </div>
             
             <div id="sh-status">
