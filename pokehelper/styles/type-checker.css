@@ -1,0 +1,170 @@
+/* =========================================
+   Type Checker Panel
+   ========================================= */
+
+
+#tc-panel {
+    position: fixed;
+    min-width: 240px;
+    max-width: 320px;
+    width: auto;
+    height: auto !important;  /* Force height to auto */
+    background: #1a1a2e;
+    border: 2px solid #4ecca3;
+    border-radius: 10px;
+    color: #eee;
+    font-family: monospace;
+    font-size: 13px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    overflow: visible;
+    display: block;
+}
+.tc-panel-content {
+    padding: 12px 16px;
+    height: auto !important;  /* Force height to auto */
+    max-height: none;
+}
+.tc-title {
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #4ecca3;
+    pointer-events: none;  
+}
+
+/* =========================================
+   Type Checker Components
+   ========================================= */
+
+.tc-select {
+    width: 100%;
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #0f0f1a;
+    color: #fff;
+    font-family: monospace;
+    font-size: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.tc-section {
+    margin-bottom: 8px;
+}
+
+.tc-label {
+    font-size: 10px;
+    color: #aaa;
+    margin-bottom: 4px;
+}
+
+.tc-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.tc-badge {
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+    text-transform: capitalize;
+}
+
+.tc-badge-effective { background: #2a4a2a; border: 1px solid #4ecca3; color: #4ecca3; }
+.tc-badge-weak { background: #4a2a2a; border: 1px solid #e94560; color: #e94560; }
+.tc-badge-immune { background: #2a2a2a; border: 1px solid #666; color: #aaa; }
+.tc-badge-resists { background: #2a2a4a; border: 1px solid #4a90e2; color: #4a90e2; }
+
+.tc-badge-effective-4 { 
+    background: #1a4a1a; 
+    border: 1px solid #00ff88; 
+    color: #00ff88; 
+    font-weight: bold;
+}
+
+.tc-badge-weak-4 { 
+    background: #5a1a1a; 
+    border: 1px solid #ff2244; 
+    color: #ff2244; 
+    font-weight: bold;
+}
+
+.tc-badge-resists-quarter { 
+    background: #1a1a5a; 
+    border: 1px solid #88aaff; 
+    color: #88aaff; 
+}
+
+.tc-mosaic {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.tc-type-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    height: 34px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: 0.15s ease;
+}
+
+.tc-type-tile:hover {
+    border: 2px solid #fff;
+}
+
+.tc-type-selected {
+    border: 2px solid #fff;
+    box-shadow: 0 0 6px rgba(255,255,255,0.4);
+}
+
+.tc-type-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.tc-hidden {
+    display: none !important;
+}
+
+.tc-slot-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.tc-slot {
+    flex: 1;
+    text-align: center;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.25);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.tc-slot:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.tc-slot-icon img {
+    height: 18px;
+    image-rendering: pixelated;
+}
+
+
+.tc-empty { color: #555; font-size: 11px; }
+.tc-loading { color: #555; font-size: 11px; }

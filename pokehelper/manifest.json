@@ -1,0 +1,50 @@
+{
+    "manifest_version": 3,
+    "name": "Auto Reroll Non Shiny",
+    "version": "1.0",
+
+    "permissions":
+    [
+        "storage"
+    ],
+
+    "host_permissions":
+    [
+        "https://pokelike.xyz/*",
+        "https://pokeapi.co/*"
+    ],
+
+    "action":
+    {
+        "default_popup": "popup.html"
+    },
+
+    "background":
+    {
+        "service_worker": "js/background.js"
+    },
+
+    "content_scripts": 
+    [
+        {
+            "matches":
+            [
+                "https://pokelike.xyz/*"
+            ],
+         "css": [
+            "styles/main.css",
+            "styles/shiny-helper.css",
+            "styles/type-checker.css"
+        ],
+           "js": ["api/pokeapi.js",  "templates/type-checker-templates.js","templates/templates.js","js/type-checker.js", "js/content.js"],
+           "run_at": "document_idle"
+        }
+        
+    ],
+    "web_accessible_resources": [
+        {
+        "resources": ["jaja.ogg"],
+        "matches": ["<all_urls>"]
+        }
+    ]
+}
