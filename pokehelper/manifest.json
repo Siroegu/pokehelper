@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Auto Reroll Non Shiny",
+    "name": "pokehelper",
     "version": "1.0",
 
     "permissions":
