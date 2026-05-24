@@ -18,6 +18,7 @@
         rerolls: 0,
         shinyFound: false,
         targets: [],
+        typeFilters: [],
         sleepMs: 0,
         muted: false,
         volume: 0.5,
@@ -106,13 +107,39 @@
             return state.targets.find(t => text.includes(t.toLowerCase())) || null;
         },
 
+        isTypeMatch(card) {
+            if (!state.typeFilters.length) return false;
+            const badges = Array.from(card.querySelectorAll(".type-badge"));
+            const cardTypes = badges.map(b => b.textContent.trim().toLowerCase());
+            return state.typeFilters.some(f => cardTypes.includes(f.toLowerCase()));
+        },
+
         isMatch(card) {
             const shiny = game.isShiny(card);
             const matchesTarget = game.isTargetPokemon(card);
+            const matchesType = game.isTypeMatch(card);
             const hasTargets = state.targets.length > 0;
-            if (hasTargets && state.shinyOnly)  return shiny && matchesTarget;
-            if (hasTargets && !state.shinyOnly) return matchesTarget;
-            if (!hasTargets && state.shinyOnly) return shiny;
+            const hasTypeFilters = state.typeFilters.length > 0;
+
+            if (hasTargets && hasTypeFilters) {
+                if (state.shinyOnly) return shiny && (matchesTarget || matchesType);
+                return matchesTarget || matchesType;
+            }
+
+            if (hasTargets) {
+                if (state.shinyOnly) return shiny && matchesTarget;
+                return matchesTarget;
+            }
+
+            if (hasTypeFilters) {
+                if (state.shinyOnly) return shiny && matchesType;
+                return matchesType;
+            }
+
+            if (!hasTargets && !hasTypeFilters) {
+                return state.shinyOnly ? shiny : false;
+            }
+
             return false;
         },
 
@@ -121,10 +148,13 @@
         },
 
         getPokeball() {
-            return document.querySelector('image[href*="catchPokemon"]')
-                || document.querySelector('image[xlink\\:href*="catchPokemon"]');
+            return (
+                document.querySelector('image[href*="catchPokemon"]') ||
+                document.querySelector('image[href*="pokeball"]') ||
+                document.querySelector('image[xlink\\:href*="catchPokemon"]') ||
+                document.querySelector('image[xlink\\:href*="pokeball"]')
+            );
         },
-
         playAlert() {
             const audio = new Audio(chrome.runtime.getURL("jaja.ogg"));
             audio.volume = state.muted ? 0 : 0.1;
@@ -153,15 +183,17 @@
         root.appendChild(ui.panel);  // Only append once, not to body
         
         ui.els = {
-            input:       ui.panel.querySelector("#sh-target"),
-            add:         ui.panel.querySelector("#sh-add"),
-            tagList:     ui.panel.querySelector("#sh-tag-list"),
-            toggle:      ui.panel.querySelector("#sh-toggle"),
-            clear:       ui.panel.querySelector("#sh-clear"),
-            mute:        ui.panel.querySelector("#sh-mute"),
-            rerolls:     ui.panel.querySelector("#sh-rerolls"),
-            state:       ui.panel.querySelector("#sh-state"),
-            shinyToggle: ui.panel.querySelector("#sh-shiny-toggle"),            
+            input:           ui.panel.querySelector("#sh-target"),
+            add:             ui.panel.querySelector("#sh-add"),
+            typePicker:      ui.panel.querySelector("#sh-type-picker"),
+            tagList:         ui.panel.querySelector("#sh-tag-list"),
+            toggle:          ui.panel.querySelector("#sh-toggle"),
+            typeFilterPanel: ui.panel.querySelector("#sh-type-filter-panel"),
+            clear:           ui.panel.querySelector("#sh-clear"),
+            mute:            ui.panel.querySelector("#sh-mute"),
+            rerolls:         ui.panel.querySelector("#sh-rerolls"),
+            state:           ui.panel.querySelector("#sh-state"),
+            shinyToggle:     ui.panel.querySelector("#sh-shiny-toggle"),            
         };
     
         ui.bindEvents();
@@ -223,7 +255,7 @@
         },
 
         bindEvents() {
-            const { input, add, toggle, clear, mute } = ui.els;
+            const { input, add, typePicker, toggle, clear, mute } = ui.els;
             const star = ui.panel.querySelector("#sh-shiny-star");
 
             ui.els.shinyToggle.addEventListener("change", () => {
@@ -256,12 +288,15 @@
             });
 
             add.addEventListener("click",   () => ui.addTarget());
+            typePicker.addEventListener("click", () => ui.openTypeChooser());
             toggle.addEventListener("click", () => toggleEnabled());
 
             clear.addEventListener("click", () => {
                 state.targets = [];
+                state.typeFilters = [];
                 state.shinyFound = false;
                 ui.renderTags();
+                ui.renderTypeFilters();
                 ui.setState("Running", "#4ecca3");
                 TypeChecker.reset();
             });
@@ -270,26 +305,6 @@
                 state.muted = !state.muted;
                 mute.textContent = state.muted ? "🔇" : "🔊";
             });
-
-           const typeToggle = ui.panel.querySelector("#sh-type-toggle");
-
-            typeToggle.addEventListener("click", () => {
-            const typePanel = document.getElementById("tc-panel");
-            if (typePanel) {
-                // Check current display state
-                const isHidden = typePanel.style.display === "none";
-                
-                if (isHidden) {
-                    // Show the panel
-                    typePanel.style.display = "block";  // Use "block", not "flex"
-                    // Reposition it below Shiny Helper
-                    positionTypeChecker();
-                } else {
-                    // Hide the panel
-                    typePanel.style.display = "none";
-                }
-            }
-        });
         },
 
         async addTarget(rawName) {
@@ -317,6 +332,16 @@
             ui.renderTags();
         },
 
+        openTypeChooser() {
+            if (!ui.els.typeFilterPanel) return;
+
+            ui.els.typeFilterPanel.classList.toggle("hidden");
+            if (!ui.els.typeFilterPanel.classList.contains("hidden")) {
+                ui.renderTypeFilters();
+            }
+            positionTypeChecker();
+        },
+
         renderTags() {
             const list = ui.els.tagList;
             list.innerHTML = "";
@@ -328,6 +353,68 @@
                 tag.querySelector(".sh-tag-remove").addEventListener("click", () => ui.removeTarget(name));
                 list.appendChild(tag);
             });
+
+            state.typeFilters.forEach(type => {
+                const tag = document.createElement("div");
+                tag.className = "sh-tag sh-type-tag";
+                tag.innerHTML = `
+                    <img class="sh-type-tag-img" src="${PokeAPI.TYPE_ICON_CACHE[type] || PokeAPI.getTypeIconUrl(type)}" alt="${type}" />
+                    <span class="sh-tag-remove" data-type="${type}">&times;</span>
+                `;
+                tag.querySelector(".sh-tag-remove").addEventListener("click", () => ui.removeTypeFilter(type));
+                list.appendChild(tag);
+            });
+
+            positionTypeChecker();
+        },
+
+        renderTypeFilters() {
+            if (!ui.els.typeFilterPanel) return;
+
+            const selectedTypes = state.typeFilters.slice();
+            const typeButtons = PokeAPI.ALL_TYPES.map(type => {
+                const active = selectedTypes.includes(type) ? "selected" : "";
+                const icon = PokeAPI.TYPE_ICON_CACHE[type] || PokeAPI.getTypeIconUrl(type);
+                return `
+                    <button class=\"sh-type-filter-button ${active}\" data-type=\"${type}\" title=\"${type}\">
+                        <img src=\"${icon}\" alt=\"${type}\" />
+                    </button>
+                `;
+            }).join("");
+
+            ui.els.typeFilterPanel.innerHTML = `
+                <div class=\"sh-type-filter-buttons\">${typeButtons}</div>
+            `;
+
+            ui.els.typeFilterPanel.querySelectorAll(".sh-type-filter-button").forEach(button => {
+                button.addEventListener("click", () => ui.toggleTypeFilter(button.dataset.type));
+            });
+
+            positionTypeChecker();
+        },
+
+        toggleTypeFilter(type) {
+            const normalized = type.toLowerCase();
+            const index = state.typeFilters.findIndex(t => t.toLowerCase() === normalized);
+            if (index >= 0) {
+                state.typeFilters.splice(index, 1);
+            } else if (state.typeFilters.length < 2) {
+                state.typeFilters.push(normalized);
+            }
+            ui.renderTags();
+            ui.renderTypeFilters();
+        },
+
+        removeTypeFilter(type) {
+            state.typeFilters = state.typeFilters.filter(t => t.toLowerCase() !== type.toLowerCase());
+            ui.renderTags();
+            ui.renderTypeFilters();
+        },
+
+        clearTypeFilters() {
+            state.typeFilters = [];
+            ui.renderTags();
+            ui.renderTypeFilters();
         },
 
         setState(text, color) {
@@ -524,6 +611,7 @@ function positionTypeChecker() {
     const shinyRect = shinyPanel.getBoundingClientRect();
     
     typePanel.style.position = "fixed";
+    typePanel.style.display = "block";
     typePanel.style.left = `${shinyRect.left}px`;
     typePanel.style.top = `${shinyRect.bottom + 8}px`;  // 8px gap
 }
@@ -581,6 +669,7 @@ function makeShinyDraggable() {
         // Move Type Checker to follow (below Shiny Helper)
         const typePanel = document.getElementById("tc-panel");
         if (typePanel) {
+            typePanel.style.display = "block";
             typePanel.style.left = `${newLeft}px`;
             typePanel.style.top = `${newTop + rect.height + 8}px`;
         }

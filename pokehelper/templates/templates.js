@@ -16,10 +16,17 @@ const templates = {
             <span id="sh-shiny-star">⭐</span>
             <input id="sh-target" type="text" class="sh-input sh-flex-1" placeholder="e.g. Squirtle" />
             <button id="sh-add" class="sh-btn sh-btn-primary">+</button>
-            <button id="sh-clear" class="sh-btn sh-btn-secondary">🧹</button>
+            <button id="sh-type-picker" class="sh-btn sh-btn-secondary" title="Choose type">
+                <span class="sh-type-picker-icon" aria-hidden="true">
+                    <span style="background:#F08030"></span>
+                    <span style="background:#6890F0"></span>
+                    <span style="background:#78C850"></span>
+                    <span style="background:#A040A0"></span>
+                </span>
+            </button>
+            <button id="sh-clear" class="sh-btn sh-btn-secondary">🗑</button>
             </div>
-            </div>
-            
+            </div>            
             <div id="sh-tag-list" class="sh-tag-list"></div>
             
             <div class="sh-row">        
@@ -30,8 +37,7 @@ const templates = {
             &nbsp;|&nbsp;
             <span id="sh-state">Running</span>
             </div>
-        
-            <button id="sh-type-toggle">Types</button>
+            <div id="sh-type-filter-panel" class="sh-type-filter-panel hidden"></div>
         </div>
     `,
 

@@ -8,6 +8,52 @@ const TypeChecker = (() => {
     let selected = [null, null];
     let activeSlot = null;
 
+    let onTypeSelect = null;
+
+    function setOnTypeSelect(cb) {
+        onTypeSelect = cb;
+    }
+
+    function getSelectedTypes() {
+        return selected.filter(Boolean);
+    }
+
+    function notifyTypeSelect() {
+        if (onTypeSelect) onTypeSelect(getSelectedTypes());
+    }
+
+    function refreshMatchups() {
+        if (selected[0] || selected[1]) {
+            loadMatchups(selected[0], selected[1]);
+        } else {
+            hideAll();
+        }
+    }
+
+    function setSelectedTypes(types = []) {
+        const normalized = types
+            .map(type => type && type.toLowerCase())
+            .filter(Boolean)
+            .slice(0, 2);
+
+        selected = [normalized[0] || null, normalized[1] || null];
+        activeSlot = null;
+
+        updateSlots();
+        closeMosaic();
+        refreshMatchups();
+    }
+
+    function openChooser(slot = null) {
+        if (!state.els.mosaic) return;
+
+        activeSlot = Number.isInteger(slot)
+            ? slot
+            : selected[0] && !selected[1] ? 1 : 0;
+
+        openMosaic();
+    }
+
     function build(container) {
         state.panel = document.createElement("div");
         state.panel.id = "tc-panel";
@@ -77,11 +123,8 @@ const TypeChecker = (() => {
                 updateSlots();
                 closeMosaic();
 
-                if (selected[0] || selected[1]) {
-                    loadMatchups(selected[0], selected[1]);
-                } else {
-                    hideAll();
-                }
+                notifyTypeSelect();
+                refreshMatchups();
             });
         }
 
@@ -149,6 +192,8 @@ const TypeChecker = (() => {
         selected = [null, null];
         activeSlot = null;
 
+        notifyTypeSelect();
+
         if (state.els.slot1) state.els.slot1.innerHTML = "—";
         if (state.els.slot2) state.els.slot2.innerHTML = "—";
         if (state.els.mosaic) state.els.mosaic.classList.add("tc-hidden");
@@ -213,5 +258,5 @@ const TypeChecker = (() => {
         render(defMap, 0, state.els.immune, "tc-badge-immune");
     }
 
-    return { build, reset };
-})();
+    return { build, reset, setOnTypeSelect, setSelectedTypes, openChooser };
+})();   

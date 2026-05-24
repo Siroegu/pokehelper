@@ -95,24 +95,57 @@
     color: #ccc;
 }
 
-#sh-type-toggle {
+.sh-type-filter-panel {
+    display: block;
     margin-top: 8px;
-    margin-bottom: 4px;
-    padding: 5px 8px;
-    width: 100%;
-    background: #2a2a4a;
-    border: 1px solid #4ecca3;
-    border-radius: 6px;
-    color: #4ecca3;
-    font-family: monospace;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.15s ease;
+    padding: 10px 8px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #111;
 }
 
-#sh-type-toggle:hover {
-    background: #3a3a5a;
+.sh-type-filter-panel.hidden {
+    display: none;
 }
+
+.sh-type-filter-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.sh-type-filter-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    padding: 2px 4px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background: #1a1a2e;
+    color: #eee;
+    cursor: pointer;
+    font-size: 11px;
+    text-transform: capitalize;
+}
+
+.sh-type-filter-button img {
+    width: 100%;
+    height: 20px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.sh-type-filter-button:hover {
+    background: #2a2a4a;
+}
+
+.sh-type-filter-button.selected {
+    background: #4ecca3;
+    color: #111;
+    border-color: #4ecca3;
+}
+
 /* The button row layout */
 .sh-row {
     display: flex;
@@ -141,13 +174,34 @@
 }
 
 #sh-add,
-#sh-clear {
+#sh-clear,
+#sh-type-picker {
     width: 32px;
     height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0;
+}
+
+#sh-clear {
+    font-size: 17px;
+    line-height: 1;
+}
+
+#sh-type-picker .sh-type-picker-icon {
+    display: grid;
+    grid-template-columns: repeat(2, 8px);
+    grid-template-rows: repeat(2, 8px);
+    gap: 2px;
+    pointer-events: none;
+}
+
+#sh-type-picker .sh-type-picker-icon span {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.18) inset;
 }
 
 /* =========================================
@@ -193,6 +247,18 @@
     border-radius: 12px;
     color: #eee;
     font-size: 11px;
+}
+
+.sh-type-tag {
+    border-color: #4ecca3;
+    color: #4ecca3;
+}
+
+.sh-type-tag-img {
+    width: 48px;
+    height: 16px;
+    object-fit: contain;
+    display: block;
 }
 
 .sh-tag-remove {
