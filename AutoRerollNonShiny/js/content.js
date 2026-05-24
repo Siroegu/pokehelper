@@ -18,7 +18,7 @@
         rerolls: 0,
         shinyFound: false,
         targets: [],
-        sleepMs: 150,
+        sleepMs: 0,
         muted: false,
         volume: 0.5,
         shinyOnly: true,
@@ -161,8 +161,7 @@
             mute:        ui.panel.querySelector("#sh-mute"),
             rerolls:     ui.panel.querySelector("#sh-rerolls"),
             state:       ui.panel.querySelector("#sh-state"),
-            shinyToggle: ui.panel.querySelector("#sh-shiny-toggle"),
-            delay:       0,
+            shinyToggle: ui.panel.querySelector("#sh-shiny-toggle"),            
         };
     
         ui.bindEvents();
@@ -224,7 +223,7 @@
         },
 
         bindEvents() {
-            const { input, add, toggle, clear, mute, delay } = ui.els;
+            const { input, add, toggle, clear, mute } = ui.els;
             const star = ui.panel.querySelector("#sh-shiny-star");
 
             ui.els.shinyToggle.addEventListener("change", () => {
@@ -312,11 +311,6 @@
             ui.renderTags();
         },
 
-        updateDelay() {
-            const val = parseInt(ui.els.delay.value.trim());
-            if (isNaN(val)) return;
-            state.sleepMs = val;
-        },
 
         removeTarget(name) {
             state.targets = state.targets.filter(t => t !== name);
@@ -364,7 +358,7 @@
     // -------------------------
     // CORE LOOP
     // -------------------------
-    async function loop() {
+    async function loop() {        
         while (true) {
             if (!game.isOnCatchScreen()) {
                 await sleep(300);
