@@ -127,6 +127,7 @@
 
         playAlert() {
             const audio = new Audio(chrome.runtime.getURL("jaja.ogg"));
+            audio.volume = state.muted ? 0 : 0.1;
             audio.play();
         }
     };
@@ -319,7 +320,7 @@
 
         updateDelay() {
             const val = parseInt(ui.els.delay.value.trim());
-            if (!val || isNaN(val)) return;
+            if (isNaN(val)) return;
             state.sleepMs = val;
         },
 
